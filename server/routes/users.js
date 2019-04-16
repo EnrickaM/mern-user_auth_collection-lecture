@@ -27,6 +27,7 @@ var createHash = function(password){
 };
 
 router.get('/', (req, res, next) => {
+  console.log("Home page");
   console.log(req.session);
   console.log(req.session.username);
 
@@ -43,9 +44,11 @@ router.get('/logout', (req, res, next) => {
   // console.log(req.session.username);
 
   if (req.session) {
+    console.log("has session");
     req.session=null;
     res.send("Logged Out");
   } else {
+    console.log("Doesn't have session");
     res.send("Not logged in");
   }
 });
@@ -89,6 +92,7 @@ router.post('/login',
     function(req, res) {
       // console.log(req.body.user);
       req.session.username=req.body.username;
+      console.log("Saving cookie");
       res.send(req.body.username);
     });
 
@@ -108,9 +112,8 @@ router.get('/loginfail', (req, res)=>{
 //******************************************************************
 
 // This is the "strategy" for signing up a new user
-passport.use('signup', new LocalStrategy({
-      passReqToCallback : true
-    },
+passport.use('signup', new LocalStrategy(
+    // {passReqToCallback : true},
     function(req, username, password, done) {
       console.log("0");
       findOrCreateUser = function(){
@@ -188,6 +191,41 @@ router.get('/failNewUser', (req, res)=>{
 });
 
 
+router.get('/grabToDo', (req, res)=>{
+  userCollection.findOne({username: req.session.username}, (errors, results)=>{
+    if(results){console.log(results); return res.send(results); }
+    else{console.log(req.session); return res.send({message: "Didn't find a user!!!"})}
+  })
+});
+
+router.post('/addToDo', (req,res)=>{
+  // userCollection.findOne({username: req.body.username}, (errors, results)=>{
+  //   if(errors) res.send(errors);
+  //   else{
+  //     // console.log("Adding To Do Item");
+  //     // console.log(req.body);
+  //     if(!results){
+  //       res.send(errors);
+  //     }
+  //     else{
+  //       console.log("results are");
+  //       console.log(results);
+  //       userCollection.updateOne({username: req.body.username},
+  //           {
+  //             todo: results.todo.push(req.body.todoItem)
+  //           }, (errors2, results2)=>{
+  //         if(errors2) res.send(errors2);
+  //         else res.send("UPDATED");
+  //           });
+  //     }
+  //   }
+  // });
+  userCollection.findOneAndUpdate({username: req.body.username},
+      {$push: {todo: req.body.todoItem}}, (errors, results)=>{
+        if(errors) res.send(errors);
+        else res.send("ADDED!!!");
+      });
+});
 
 // ******************************************
 // ******   How to protect routes   *********

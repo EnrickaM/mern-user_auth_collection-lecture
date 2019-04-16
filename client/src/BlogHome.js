@@ -23,21 +23,44 @@ class BlogHome extends Component{
     }
 
     checkForUser(){
+        console.log("Check for user");
         fetch('/users')
-            .then(response=>{
+            .then(data=>{
                 // console.log(response.text());
-                return response.text();
+                return data.text();
             })
-                .then(data=>{
-                this.setState(
-                    {
-                        logInfo:{
-                            username: data,
-                            loggedIn: true,
-                        }
-                    });
+                .then(response=>{
+
+                    if(response) {
+                        this.setState(
+                            {
+                                logInfo:{
+                                    username: response,
+                                    loggedIn: true,
+                                }
+                            });
+                        // return this.updateIfLoggedIn(response, true);
+                    }
+                    else {
+                        this.setState(
+                            {
+                                logInfo:{
+                                    username: null,
+                                    loggedIn: false,
+                                }
+                            });
+                        // return this.updateIfLoggedIn(response, false)``;
+                    }
+                // this.setState(
+                //     {
+                //         logInfo:{
+                //             username: data,
+                //             loggedIn: true,
+                //         }
+                //     });
             });
     }
+
 
     loggedInUserInfo =(username, loggedIn)=>{
         console.log("Clear");
@@ -57,11 +80,6 @@ class BlogHome extends Component{
             .then(data=>console.log(data))
             .then(()=>this.loggedInUserInfo(undefined, false))
             .catch(()=>console.log("Test"));
-
-
-        // if(this.state.logInfo.loggedIn){
-        //     this.loggedInUserInfo(null, false);
-        // }
     };
 
     render(){
@@ -71,13 +89,13 @@ class BlogHome extends Component{
                     <h1>Start of Page</h1>
 
                     <Link className="linkSpacing" to='/'>Home</Link>
-                    <Link className="linkSpacing" to='/login'>Sign In</Link>
+                    {/*<Link className="linkSpacing" to='/login'>Sign In</Link>*/}
                     <Link className="linkSpacing" to='/adduser'>Add User</Link>
                     <Link className="linkSpacing" to='/loggedIn'>Logged In User's Info</Link>
                     <Link className="linkSpacing" to='/loggedout' onClick={this.logUserOut}>Log Out</Link>
 
-                    <Route exact path='/list' component={BlogList}/>
-                    <Route exact path='/login' component={()=>{return <Login logInfo={this.state.logInfo} loggedInUserInfo={this.loggedInUserInfo}/>} }/>
+                    <Route exact path='/' component={()=>{return <BlogList logInfo={this.state.logInfo} loggedInUserInfo={this.loggedInUserInfo} />} }/>
+                    {/*<Route exact path='/login' component={()=>{return <Login logInfo={this.state.logInfo} loggedInUserInfo={this.loggedInUserInfo}/>} }/>*/}
                     <Route exact path='/adduser' component={AddUser}/>
                     <Route exact path='/loggedIn' component={()=>{return <LoggedInData logInfo={this.state.logInfo} loggedInUserInfo={this.loggedInUserInfo}/>} }/>
                     <Route exact path='/loggedout' component={()=>{return <Loggedout/>} }/>
