@@ -49,9 +49,20 @@ class BlogList extends Component{
     // Map the user's todos into a new state mappedTodos
     mappedTodoFunction(){
         let mapArray = [];
+
         console.log(this.state.todos);
-        console.log(this.state.todos.length);
-        if(this.state.todos.length>0) {
+        let tempArray = [];
+        if(this.state.todos)
+            tempArray = this.state.todos;
+        else
+            tempArray = [];
+
+        // let tempVar = this.state.todos;
+        // console.log(tempVar);
+        // tempVar=[];
+        // console.log(this.state.todos.length);
+        if(tempArray.length>0) {
+        // if(tempVar>0) {
             mapArray = this.state.todos.map(
                 (eachElement, index) => {
                     return (<div key={index}>

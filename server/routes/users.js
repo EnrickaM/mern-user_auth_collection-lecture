@@ -113,7 +113,7 @@ router.get('/loginfail', (req, res)=>{
 
 // This is the "strategy" for signing up a new user
 passport.use('signup', new LocalStrategy(
-    // {passReqToCallback : true},
+    {passReqToCallback : true},
     function(req, username, password, done) {
       console.log("0");
       findOrCreateUser = function(){
