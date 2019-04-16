@@ -190,39 +190,25 @@ router.get('/failNewUser', (req, res)=>{
   console.log("Failed New User");
 });
 
-
+// This route looks for a user saved in the cookie data and find that user in your database. It returns the entire results of that user to the client. The results include the to-do list ARRAY.
 router.get('/grabToDo', (req, res)=>{
+    // finds one user name from the cookie (session) data
   userCollection.findOne({username: req.session.username}, (errors, results)=>{
-    if(results){console.log(results); return res.send(results); }
-    else{console.log(req.session); return res.send({message: "Didn't find a user!!!"})}
+    // If there are returned results from finding a user, the results are returned to the client (res.send)
+    if(results){ return res.send(results); }
+    // If there is an error, send an error message to the client
+    else{return res.send({message: "Didn't find a user!!!"})}
   })
 });
 
+// This is from fetch '/users/addToDo' run from the client side as a post.
 router.post('/addToDo', (req,res)=>{
-  // userCollection.findOne({username: req.body.username}, (errors, results)=>{
-  //   if(errors) res.send(errors);
-  //   else{
-  //     // console.log("Adding To Do Item");
-  //     // console.log(req.body);
-  //     if(!results){
-  //       res.send(errors);
-  //     }
-  //     else{
-  //       console.log("results are");
-  //       console.log(results);
-  //       userCollection.updateOne({username: req.body.username},
-  //           {
-  //             todo: results.todo.push(req.body.todoItem)
-  //           }, (errors2, results2)=>{
-  //         if(errors2) res.send(errors2);
-  //         else res.send("UPDATED");
-  //           });
-  //     }
-  //   }
-  // });
+    // Find the user sent in the req.body. Push ($push) the req.body.todoItem into the _todo (ignore the underscore) key to add to the existing array in _todo.
   userCollection.findOneAndUpdate({username: req.body.username},
       {$push: {todo: req.body.todoItem}}, (errors, results)=>{
-        if(errors) res.send(errors);
+      // If there was an error send the error
+      if(errors) res.send(errors);
+      // If it went through send "ADDED!!!"
         else res.send("ADDED!!!");
       });
 });
